@@ -3,6 +3,7 @@ import axios from "axios";
 import { Formik, Form } from "formik";
 import { InputField } from "../components/InputField";
 import * as yup from "yup";
+import { throwMessage } from "../helpers/toastr/ToastMessages";
 
 interface ProjectProps {
   id: number | undefined;
@@ -16,7 +17,7 @@ const Projects: React.FC = () => {
       .number()
       .typeError("Please enter a valid number")
       .required("Required")
-      .min(0, "Minimum atleast 0"),
+      .min(0, "Project ID cannot be 0 or negative."),
     devs_needed: yup
       .number()
       .typeError("Please enter a valid number")
@@ -42,7 +43,10 @@ const Projects: React.FC = () => {
             devs_needed: parseInt(submitData.devs_needed),
           };
 
-          const { status } = await axios.get("http://localhost:3000/status");
+          const { status } = await axios({
+            method: "get",
+            url: "http://localhost:3000/status"
+          });
 
           if (status === 200) {
             await axios({
@@ -50,7 +54,7 @@ const Projects: React.FC = () => {
               url: "http://localhost:3000/project",
               data: newProject,
             });
-            alert("New Project Added Succesfully")
+            throwMessage("New Project Added Succesfully")
           }
 
           setSubmitting(false);

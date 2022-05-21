@@ -4,6 +4,7 @@ import { Formik, Form } from "formik";
 import { InputField } from "../components/InputField";
 import * as yup from "yup";
 import { useState } from "react";
+import { throwMessage } from "../helpers/toastr/ToastMessages";
 
 interface TeamProps {
   id: number | undefined;
@@ -14,7 +15,10 @@ const Teams: React.FC = () => {
   const [teams, setTeams] = useState<TeamProps[]>();
 
   const handleSubmitTeams = async () => {
-    const { status } = await axios.get("http://localhost:3000/status");
+    const { status } = await axios({
+      method: "get",
+      url: "http://localhost:3000/status",
+    });
 
     if (status === 200) {
       await axios({
@@ -22,7 +26,8 @@ const Teams: React.FC = () => {
         url: "http://localhost:3000/teams",
         data: teams,
       });
-      alert("List of Teams Added Succesfully")
+      throwMessage("List of Teams Added Succesfully");
+      setTeams([])
     }
   };
 
@@ -62,7 +67,9 @@ const Teams: React.FC = () => {
               (team) => team.id === newTeam.id
             );
             if (teamAlreadyExists) {
-              alert(`Team with id ${teamAlreadyExists.id} already exists`);
+              throwMessage(
+                `Team with id ${teamAlreadyExists.id} already exists`
+              );
               resetForm();
               return;
             }
