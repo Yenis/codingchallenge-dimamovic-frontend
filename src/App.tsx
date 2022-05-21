@@ -1,26 +1,23 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import { Routes, Route } from "react-router-dom";
+import HeaderAppBar from "./components/AppBar";
+import Assigned from "./pages/Assigned";
+import Completed from "./pages/Completed";
+import Projects from "./pages/Project";
+import Teams from "./pages/Teams";
 
-function App() {
+const App: React.FC = () => {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <HeaderAppBar />
+      <Routes>
+        <Route path="/teams" element={<Teams />}></Route>
+        <Route path="/project" element={<Projects />}></Route>
+        <Route path="/assigned" element={<Assigned />}></Route>
+        <Route path="/completed" element={<Completed />}></Route>
+      </Routes>
+    </>
   );
-}
+};
 
 export default App;
