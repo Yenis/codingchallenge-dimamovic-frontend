@@ -4,10 +4,10 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 # IMPORTANT
 
-This React App is made to work with my Coding Challenge API only.\
+This React App is made to work with my Coding Challenge API only.
 It will not have any functionality otherwise, merely working as a preview.
 
-The Coding Challenge backend service is currently in a private repository,\
+The Coding Challenge backend service is currently in a private repository,
 I can not provide any unauthorized access at the moment.
 
 ## Installation
@@ -24,9 +24,9 @@ Open [http://localhost:9775](http://localhost:9775) to view it in the browser.
 
 Alternatively, if you have Docker installed on your system, you can download this docker image of the same app: 
 
-`docker pull yenis92/codingchallenge-dimamovic-frontend:latest`\
+`docker pull yenis92/codingchallenge-dimamovic-frontend:latest`
 
-Then you can run it as a container from Docker Desktop by specifying PORT 9775, \
+Then you can run it as a container from Docker Desktop by specifying PORT 9775, 
  
 OR with this command from the terminal:
 
