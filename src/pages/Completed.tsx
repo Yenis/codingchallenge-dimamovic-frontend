@@ -3,15 +3,67 @@ import axios from "axios";
 import { Formik, Form } from "formik";
 import { InputField } from "../components/InputField";
 import * as yup from "yup";
-import { throwMessage } from "../helpers/toastr/ToastMessages";
+import { throwError, throwMessage } from "../helpers/toastr/ToastMessages";
 import { InfoBubble } from "../components/InfoBox";
+import { useState } from "react";
 
 const infoMessage = `
 Complete a project with the provided ID,
 Whether it has been started or not.
 `;
 
-const Completed: React.FC = () => {
+interface Completed {
+  isComplete: boolean;
+  completedProjectID: string;
+}
+
+const notCompleted: Completed = {
+  isComplete: false,
+  completedProjectID: "",
+};
+
+const CompletedPage: React.FC = () => {
+  const [completed, setCompleted] = useState<Completed>(notCompleted);
+
+  const handleProjectComplete = async (projectID: number) => {
+    try {
+      const { status } = await axios.get("http://localhost:3000/status");
+
+      if (status === 200) {
+        const res = await axios({
+          method: "post",
+          url: "http://localhost:3000/completed",
+          data: `ID=${projectID}`,
+        });
+        if (!res) {
+            throwError(`ERROR, Project NOT FOUND`);
+            setCompleted(notCompleted);
+          }
+        switch (res.status) {
+          case 404:
+            throwError(`ERROR, Project NOT FOUND`);
+            setCompleted(notCompleted);
+            break;
+          case 200:
+            throwMessage(`Project ${res.data} is completed.`);
+            setCompleted({
+                isComplete: true,
+                completedProjectID: res.data
+            });
+            break;
+
+          default:
+            throwError(`ERROR, Bad Request`);
+            setCompleted(notCompleted);
+        }
+      }
+    } catch (error) {
+      console.error(error);
+      throwError(`ERROR, Project NOT FOUND`);
+      setCompleted(notCompleted);
+    }
+  };
+
   const validationSchema = yup.object({
     ID: yup
       .number()
@@ -44,32 +96,7 @@ const Completed: React.FC = () => {
 
           const projectID: number = parseInt(submitData.ID);
 
-          try {
-            const { status } = await axios.get("http://localhost:3000/status");
-
-            if (status === 200) {
-              const res = await axios({
-                method: "post",
-                url: "http://localhost:3000/completed",
-                data: `ID=${projectID}`,
-              });
-              if (!res) throwMessage(`ERROR, Project NOT FOUND`);
-              switch (res.status) {
-                case 404:
-                  throwMessage(`ERROR, Project NOT FOUND`);
-                  break;
-                case 200:
-                  throwMessage(`Project ${res.data} is completed.`);
-                  break;
-
-                default:
-                  throwMessage(`ERROR, Project NOT FOUND`);
-              }
-            }
-          } catch (error) {
-            console.error(error);
-            throwMessage(`ERROR, Project NOT FOUND`);
-          }
+          await handleProjectComplete(projectID);
 
           setSubmitting(false);
           resetForm();
@@ -94,8 +121,17 @@ const Completed: React.FC = () => {
           </Form>
         )}
       </Formik>
+      {completed.isComplete ? (
+        <Box sx={{ display: "flex", justifyContent: "center" }}>
+          <Box component="h1">
+            <Box component="pre">
+             {`Project ${completed.completedProjectID} is completed.`}
+            </Box>
+          </Box>
+        </Box>
+      ) : null}
     </Box>
   );
 };
 
-export default Completed;
+export default CompletedPage;

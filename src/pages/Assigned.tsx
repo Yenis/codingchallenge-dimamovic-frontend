@@ -3,8 +3,9 @@ import axios from "axios";
 import { Formik, Form } from "formik";
 import { InputField } from "../components/InputField";
 import * as yup from "yup";
-import { throwMessage } from "../helpers/toastr/ToastMessages";
+import { throwError, throwMessage } from "../helpers/toastr/ToastMessages";
 import { InfoBubble } from "../components/InfoBox";
+import { useState } from "react";
 
 const infoMessage = `
 Provide a project ID,
@@ -12,7 +13,71 @@ and find a Team that this project is assigned to,
 or no Team if the project is not assigned. 
 `;
 
-const Assigned: React.FC = () => {
+interface Assigned {
+  isFound: boolean;
+  isAssigned: boolean;
+  assignedID: string;
+}
+
+const notAssigned: Assigned = {
+  isFound: true,
+  isAssigned: false,
+  assignedID: "",
+};
+
+const notFound: Assigned = {
+  isFound: false,
+  isAssigned: false,
+  assignedID: "",
+};
+
+const AssignedPage: React.FC = () => {
+  const [assigned, setAssigned] = useState<Assigned>(notFound);
+
+  const handleAssignProject = async (projectID: number) => {
+    try {
+      const { status } = await axios.get("http://localhost:3000/status");
+
+      if (status === 200) {
+        const res = await axios({
+          method: "post",
+          url: "http://localhost:3000/assigned",
+          data: `ID=${projectID}`,
+        });
+        if (!res) {
+          throwError(`ERROR, Project NOT FOUND`);
+          setAssigned(notFound);
+        }
+        switch (res.status) {
+          case 404:
+            throwError(`ERROR, Project NOT FOUND`);
+            setAssigned(notFound);
+            break;
+          case 204:
+            throwMessage(`Project is not assigned to any Team yet...`);
+            setAssigned(notAssigned);
+            break;
+          case 200:
+            throwMessage(`Project is assigned to Team: ${res.data}`);
+            setAssigned({
+              isFound: true,
+              isAssigned: true,
+              assignedID: res.data,
+            });
+            break;
+
+          default:
+            throwError(`ERROR, Bad Request`);
+            setAssigned(notFound);
+        }
+      }
+    } catch (error) {
+      console.error(error);
+      throwError(`ERROR, Project NOT FOUND`);
+      setAssigned(notFound);
+    }
+  };
+
   const validationSchema = yup.object({
     ID: yup
       .number()
@@ -45,35 +110,7 @@ const Assigned: React.FC = () => {
 
           const projectID: number = parseInt(submitData.ID);
 
-          try {
-            const { status } = await axios.get("http://localhost:3000/status");
-
-            if (status === 200) {
-              const res = await axios({
-                method: "post",
-                url: "http://localhost:3000/assigned",
-                data: `ID=${projectID}`,
-              });
-              if (!res) throwMessage(`ERROR, Project NOT FOUND`);
-              switch (res.status) {
-                case 404:
-                  throwMessage(`ERROR, Project NOT FOUND`);
-                  break;
-                case 204:
-                  throwMessage(`Project is not assigned to any Team yet...`);
-                  break;
-                case 200:
-                  throwMessage(`Project is assigned to Team: ${res.data}`);
-                  break;
-
-                default:
-                  throwMessage(`ERROR, Project NOT FOUND`);
-              }
-            }
-          } catch (error) {
-            console.error(error);
-            throwMessage(`ERROR, Project NOT FOUND`);
-          }
+          await handleAssignProject(projectID);
 
           setSubmitting(false);
           resetForm();
@@ -98,8 +135,19 @@ const Assigned: React.FC = () => {
           </Form>
         )}
       </Formik>
+      {assigned.isFound ? (
+        <Box sx={{ display: "flex", justifyContent: "center" }}>
+          <Box component="h1">
+            <Box component="pre">
+              {assigned.isAssigned
+                ? `Project is Assigned to Team ${assigned.assignedID}`
+                : "Project is not assigned to any Team yet"}
+            </Box>
+          </Box>
+        </Box>
+      ) : null}
     </Box>
   );
 };
 
-export default Assigned;
+export default AssignedPage;

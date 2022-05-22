@@ -4,21 +4,22 @@ import { Formik, Form } from "formik";
 import { InputField } from "../components/InputField";
 import * as yup from "yup";
 import { useState } from "react";
-import { throwMessage } from "../helpers/toastr/ToastMessages";
+import { throwError, throwMessage } from "../helpers/toastr/ToastMessages";
 import { InfoBubble } from "../components/InfoBox";
-
-interface TeamProps {
-  id: number | undefined;
-  developers: number | undefined;
-}
+import {
+  TeamProps,
+  useTeamsAndProjects,
+} from "../helpers/customHooks/teamsAndProjectsHook";
 
 const infoMessage = `
 Teams can contain 4, 5 or 6 developers.
 Multiple teams can be submitted at the same time, 
 as each submit clears previous data.`;
 
-const Teams: React.FC = () => {
+const TeamsPage: React.FC = () => {
   const [teams, setTeams] = useState<TeamProps[]>();
+
+  const { currentTeamsProjects, setTeamsAndProjects } = useTeamsAndProjects();
 
   const handleSubmitTeams = async () => {
     try {
@@ -27,6 +28,11 @@ const Teams: React.FC = () => {
         url: "http://localhost:3000/status",
       });
 
+      if (!teams) {
+        throwError("ERROR, Bad Request");
+        return;
+      }
+
       if (status === 200) {
         await axios({
           method: "put",
@@ -34,11 +40,12 @@ const Teams: React.FC = () => {
           data: teams,
         });
         throwMessage("List of Teams Added Succesfully");
+        setTeamsAndProjects({ ...currentTeamsProjects, teams: teams });
         setTeams([]);
       }
     } catch (error) {
       console.error(error);
-      throwMessage(`ERROR, Bad Request`);
+      throwError(`ERROR, Bad Request`);
     }
   };
 
@@ -89,9 +96,7 @@ const Teams: React.FC = () => {
               (team) => team.id === newTeam.id
             );
             if (teamAlreadyExists) {
-              throwMessage(
-                `Team with id ${teamAlreadyExists.id} already exists`
-              );
+              throwError(`Team with id ${teamAlreadyExists.id} already exists`);
               resetForm();
               return;
             }
@@ -152,4 +157,4 @@ const Teams: React.FC = () => {
   );
 };
 
-export default Teams;
+export default TeamsPage;

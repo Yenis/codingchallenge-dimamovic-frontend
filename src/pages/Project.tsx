@@ -5,11 +5,10 @@ import { InputField } from "../components/InputField";
 import * as yup from "yup";
 import { throwMessage } from "../helpers/toastr/ToastMessages";
 import { InfoBubble } from "../components/InfoBox";
-
-interface ProjectProps {
-  id: number | undefined;
-  devs_needed: number | undefined;
-}
+import {
+  ProjectProps,
+  useTeamsAndProjects,
+} from "../helpers/customHooks/teamsAndProjectsHook";
 
 const infoMessage = `
 Add a single project. Project must require at least 1,
@@ -17,7 +16,36 @@ and a maximum of 6 developers. Project will be
 assigned to the first Team available. 
 `;
 
-const Projects: React.FC = () => {
+const ProjectsPage: React.FC = () => {
+  const { currentTeamsProjects, setTeamsAndProjects } = useTeamsAndProjects();
+
+  const handleAddProject = async (newProject: ProjectProps) => {
+    try {
+      const { status } = await axios({
+        method: "get",
+        url: "http://localhost:3000/status",
+      });
+
+      if (status === 200) {
+        await axios({
+          method: "post",
+          url: "http://localhost:3000/project",
+          data: newProject,
+        });
+
+          setTeamsAndProjects({
+            ...currentTeamsProjects,
+            projects: [...currentTeamsProjects.projects, newProject],
+          });
+        
+        throwMessage("New Project Added Succesfully");
+      }
+    } catch (error) {
+      console.error(error);
+      throwMessage(`ERROR, Bad Request`);
+    }
+  };
+
   const validationSchema = yup.object({
     id: yup
       .number()
@@ -60,24 +88,7 @@ const Projects: React.FC = () => {
             devs_needed: parseInt(submitData.devs_needed),
           };
 
-          try {
-            const { status } = await axios({
-              method: "get",
-              url: "http://localhost:3000/status",
-            });
-
-            if (status === 200) {
-              await axios({
-                method: "post",
-                url: "http://localhost:3000/project",
-                data: newProject,
-              });
-              throwMessage("New Project Added Succesfully");
-            }
-          } catch (error) {
-            console.error(error);
-            throwMessage(`ERROR, Bad Request`);
-          }
+          await handleAddProject(newProject);
 
           setSubmitting(false);
           resetForm();
@@ -109,4 +120,4 @@ const Projects: React.FC = () => {
   );
 };
 
-export default Projects;
+export default ProjectsPage;
