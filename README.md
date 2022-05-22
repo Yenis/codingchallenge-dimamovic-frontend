@@ -30,7 +30,7 @@ Then you can run it as a container from Docker Desktop by specifying PORT 9775, 
  
 OR with this command from the terminal:
 
-### `docker run -p 9775:9775 yenis92/codingchallenge-dimamovic-frontend`
+`docker run -p 9775:9775 yenis92/codingchallenge-dimamovic-frontend`
 
 ## API
 
@@ -119,6 +119,8 @@ Given a project ID 'ID=x', return the team the project is assigned to, or no tea
 - **204 No Content** When the project is waiting for an assignment.
 - **404 Not found** When the project was not found.
 - **400 Bad Request** When there is a failure in the request format.
+- 
+![Untitled](https://user-images.githubusercontent.com/22280179/169706708-d0af7f69-30a0-48c5-8745-3d74630b32b4.png)
 
 ## Learn More
 
