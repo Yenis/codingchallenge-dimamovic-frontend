@@ -4,14 +4,20 @@ import { Formik, Form } from "formik";
 import { InputField } from "../components/InputField";
 import * as yup from "yup";
 import { throwMessage } from "../helpers/toastr/ToastMessages";
+import { InfoBubble } from "../components/InfoBox";
 
 interface ProjectProps {
   id: number | undefined;
   devs_needed: number | undefined;
 }
 
-const Projects: React.FC = () => {
+const infoMessage = `
+Add a single project. Project must require at least 1,
+and a maximum of 6 developers. Project will be
+assigned to the first Team available. 
+`;
 
+const Projects: React.FC = () => {
   const validationSchema = yup.object({
     id: yup
       .number()
@@ -27,8 +33,19 @@ const Projects: React.FC = () => {
   });
 
   return (
-    <>
-      <h1>Create Project</h1>
+    <Box sx={{ minWidth: { xs: "80%", sm: "60%", md: "40%" } }}>
+      <Box sx={{ display: "flex", justifyContent: "center" }}>
+        <Box component="h1">
+          <Box
+            sx={{ display: "flex", flexDirection: "row", alignItems: "center" }}
+          >
+            <Box component="pre" sx={{ paddingLeft: 2, paddingRight: 2 }}>
+              Create a New Project
+            </Box>
+            <InfoBubble message={infoMessage} />
+          </Box>
+        </Box>
+      </Box>
       <Formik
         initialValues={{
           id: "",
@@ -43,18 +60,23 @@ const Projects: React.FC = () => {
             devs_needed: parseInt(submitData.devs_needed),
           };
 
-          const { status } = await axios({
-            method: "get",
-            url: "http://localhost:3000/status"
-          });
-
-          if (status === 200) {
-            await axios({
-              method: "post",
-              url: "http://localhost:3000/project",
-              data: newProject,
+          try {
+            const { status } = await axios({
+              method: "get",
+              url: "http://localhost:3000/status",
             });
-            throwMessage("New Project Added Succesfully")
+
+            if (status === 200) {
+              await axios({
+                method: "post",
+                url: "http://localhost:3000/project",
+                data: newProject,
+              });
+              throwMessage("New Project Added Succesfully");
+            }
+          } catch (error) {
+            console.error(error);
+            throwMessage(`ERROR, Bad Request`);
           }
 
           setSubmitting(false);
@@ -72,6 +94,7 @@ const Projects: React.FC = () => {
             <Box>
               <Button
                 disabled={isSubmitting}
+                fullWidth
                 type="submit"
                 variant="outlined"
                 color="primary"
@@ -82,7 +105,7 @@ const Projects: React.FC = () => {
           </Form>
         )}
       </Formik>
-    </>
+    </Box>
   );
 };
 

@@ -5,29 +5,40 @@ import { InputField } from "../components/InputField";
 import * as yup from "yup";
 import { useState } from "react";
 import { throwMessage } from "../helpers/toastr/ToastMessages";
+import { InfoBubble } from "../components/InfoBox";
 
 interface TeamProps {
   id: number | undefined;
   developers: number | undefined;
 }
 
+const infoMessage = `
+Teams can contain 4, 5 or 6 developers.
+Multiple teams can be submitted at the same time, 
+as each submit clears previous data.`;
+
 const Teams: React.FC = () => {
   const [teams, setTeams] = useState<TeamProps[]>();
 
   const handleSubmitTeams = async () => {
-    const { status } = await axios({
-      method: "get",
-      url: "http://localhost:3000/status",
-    });
-
-    if (status === 200) {
-      await axios({
-        method: "put",
-        url: "http://localhost:3000/teams",
-        data: teams,
+    try {
+      const { status } = await axios({
+        method: "get",
+        url: "http://localhost:3000/status",
       });
-      throwMessage("List of Teams Added Succesfully");
-      setTeams([])
+
+      if (status === 200) {
+        await axios({
+          method: "put",
+          url: "http://localhost:3000/teams",
+          data: teams,
+        });
+        throwMessage("List of Teams Added Succesfully");
+        setTeams([]);
+      }
+    } catch (error) {
+      console.error(error);
+      throwMessage(`ERROR, Bad Request`);
     }
   };
 
@@ -46,8 +57,19 @@ const Teams: React.FC = () => {
   });
 
   return (
-    <>
-      <h1>Input Teams</h1>
+    <Box sx={{ minWidth: { xs: "80%", sm: "60%", md: "40%" } }}>
+      <Box sx={{ display: "flex", justifyContent: "center" }}>
+        <Box component="h1">
+          <Box
+            sx={{ display: "flex", flexDirection: "row", alignItems: "center" }}
+          >
+            <Box component="pre" sx={{ paddingLeft: 2, paddingRight: 2 }}>
+              Create a list of Teams
+            </Box>
+            <InfoBubble message={infoMessage} />
+          </Box>
+        </Box>
+      </Box>
       <Formik
         initialValues={{
           id: "",
@@ -93,6 +115,7 @@ const Teams: React.FC = () => {
             <Box>
               <Button
                 disabled={isSubmitting}
+                fullWidth
                 type="submit"
                 variant="outlined"
                 color="primary"
@@ -101,6 +124,7 @@ const Teams: React.FC = () => {
               </Button>
               <Button
                 disabled={!teams}
+                fullWidth
                 variant="outlined"
                 color="secondary"
                 onClick={handleSubmitTeams}
@@ -111,18 +135,20 @@ const Teams: React.FC = () => {
           </Form>
         )}
       </Formik>
-      {teams
-        ? teams.map((team) => {
-            return (
-              <Box key={team.id}>
-                <pre>
+      <Box
+        sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}
+      >
+        {teams
+          ? teams.map((team) => {
+              return (
+                <pre key={team.id}>
                   TeamID: {team.id} Developers: {team.developers}
                 </pre>
-              </Box>
-            );
-          })
-        : null}
-    </>
+              );
+            })
+          : null}
+      </Box>
+    </Box>
   );
 };
 

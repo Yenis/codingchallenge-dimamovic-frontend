@@ -4,7 +4,7 @@ import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import Button from "@mui/material/Button";
-import AdbIcon from "@mui/icons-material/Adb";
+import ApiIcon from '@mui/icons-material/Api';
 import { useNavigate } from "react-router-dom";
 
 const pages = ["Teams", "Projects", "Assigned", "Completed"];
@@ -16,12 +16,12 @@ const HeaderAppBar = () => {
     <AppBar position="sticky">
       <Container maxWidth="xl">
         <Toolbar disableGutters>
-          <AdbIcon sx={{ display: { xs: "none", md: "flex" }, mr: 1 }} />
+          <ApiIcon sx={{ display: { xs: "none", md: "flex" }, mr: 1 }} />
           <Typography
             variant="h6"
             noWrap
             component="a"
-            href="/"
+            href="https://en.dccs.at"
             sx={{
               mr: 2,
               display: { xs: "none", md: "flex" },
@@ -32,7 +32,7 @@ const HeaderAppBar = () => {
               textDecoration: "none",
             }}
           >
-            LOGO
+            <img src={require("../logo.png")} style={{transform: "10%"}} alt="dccs" />
           </Typography>
           <Box sx={{ flexGrow: 1, display: "flex", justifyContent: "space-around" }}>
             <Button
