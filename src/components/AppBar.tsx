@@ -1,7 +1,8 @@
 import * as React from "react";
-import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
+import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
+import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import Button from "@mui/material/Button";
@@ -9,23 +10,26 @@ import ApiIcon from "@mui/icons-material/Api";
 import IconButton from "@mui/material/IconButton";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
+import GroupIcon from "@mui/icons-material/Group";
+import WorkIcon from '@mui/icons-material/Work';
+import AssignmentIcon from '@mui/icons-material/Assignment';
+import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
-import { useNavigate } from "react-router-dom";
-import { Tooltip } from "@mui/material";
 import { useTeamsAndProjects } from "../helpers/customHooks/teamsAndProjectsHook";
-
-const pages = ["Teams", "Projects", "Assigned", "Completed"];
-
-const infoMessage = `
-This simple Front-end App is used to test the API 
-I have bult as a coding challenge for 
-DCCS IT Business Solutions Office in Tuzla.
-Please refer to the Readme.md for info about the API.`;
-
-const dccsLink = "https://en.dccs.at";
+import { useNavigate } from "react-router-dom";
 
 const HeaderAppBar: React.FC = () => {
   const navigateTo = useNavigate();
+
+  const pages = ["Teams", "Projects", "Assigned", "Completed"];
+
+  const infoMessage = `
+  This simple Front-end App is used to test the API 
+  I have bult as a coding challenge for 
+  DCCS IT Business Solutions Office in Tuzla.
+  Please refer to the Readme.md for info about the API.`;
+
+  const dccsLink = "https://en.dccs.at";
 
   const { currentTeamsProjects } = useTeamsAndProjects();
 
@@ -96,6 +100,7 @@ const HeaderAppBar: React.FC = () => {
                 alignItems: "center",
               }}
             >
+              <GroupIcon />
               <Button
                 onClick={() => navigateTo("/teams")}
                 sx={{ my: 2, color: "white", display: "block" }}
@@ -147,6 +152,7 @@ const HeaderAppBar: React.FC = () => {
                 alignItems: "center",
               }}
             >
+              <WorkIcon />
               <Button
                 onClick={() => navigateTo("/project")}
                 sx={{ my: 2, color: "white", display: "block" }}
@@ -191,7 +197,14 @@ const HeaderAppBar: React.FC = () => {
                 </Tooltip>
               )}
             </Box>
-            <Box>
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+              }}
+            >
+            <AssignmentIcon />
               <Button
                 onClick={() => navigateTo("/assigned")}
                 sx={{ my: 2, color: "white", display: "block" }}
@@ -199,7 +212,14 @@ const HeaderAppBar: React.FC = () => {
                 {pages[2]}
               </Button>
             </Box>
-            <Box>
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+              }}
+            >
+              <AssignmentTurnedInIcon />
               <Button
                 onClick={() => navigateTo("/completed")}
                 sx={{ my: 2, color: "white", display: "block" }}
@@ -213,4 +233,5 @@ const HeaderAppBar: React.FC = () => {
     </AppBar>
   );
 };
+
 export default HeaderAppBar;

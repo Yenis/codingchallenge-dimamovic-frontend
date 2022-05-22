@@ -1,17 +1,12 @@
-import { Box, Button } from "@mui/material";
 import axios from "axios";
+import { useState } from "react";
 import { Formik, Form } from "formik";
 import { InputField } from "../components/InputField";
-import * as yup from "yup";
-import { throwError, throwMessage } from "../helpers/toastr/ToastMessages";
 import { InfoBubble } from "../components/InfoBox";
-import { useState } from "react";
-
-const infoMessage = `
-Provide a project ID,
-and find a Team that this project is assigned to,
-or no Team if the project is not assigned. 
-`;
+import { Box, Button } from "@mui/material";
+import { throwError, throwMessage } from "../helpers/toastr/ToastMessages";
+import FindInPageIcon from "@mui/icons-material/FindInPage";
+import * as yup from "yup";
 
 interface Assigned {
   isFound: boolean;
@@ -33,6 +28,11 @@ const notFound: Assigned = {
 
 const AssignedPage: React.FC = () => {
   const [assigned, setAssigned] = useState<Assigned>(notFound);
+
+  const infoMessage = `
+  Provide a project ID,
+  and find a Team that this project is assigned to,
+  or no Team if the project is not assigned.`;
 
   const handleAssignProject = async (projectID: number) => {
     try {
@@ -109,7 +109,6 @@ const AssignedPage: React.FC = () => {
           setSubmitting(true);
 
           const projectID: number = parseInt(submitData.ID);
-
           await handleAssignProject(projectID);
 
           setSubmitting(false);
@@ -129,6 +128,7 @@ const AssignedPage: React.FC = () => {
                 variant="outlined"
                 color="primary"
               >
+                <FindInPageIcon sx={{ paddingLeft: 1, paddingRight: 1 }} />
                 Find Project
               </Button>
             </Box>

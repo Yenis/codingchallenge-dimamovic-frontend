@@ -1,25 +1,26 @@
-import { Box, Button } from "@mui/material";
 import axios from "axios";
+import { useState } from "react";
 import { Formik, Form } from "formik";
 import { InputField } from "../components/InputField";
-import * as yup from "yup";
-import { useState } from "react";
-import { throwError, throwMessage } from "../helpers/toastr/ToastMessages";
 import { InfoBubble } from "../components/InfoBox";
+import { Box, Button } from "@mui/material";
+import * as yup from "yup";
 import {
   TeamProps,
   useTeamsAndProjects,
 } from "../helpers/customHooks/teamsAndProjectsHook";
-
-const infoMessage = `
-Teams can contain 4, 5 or 6 developers.
-Multiple teams can be submitted at the same time, 
-as each submit clears previous data.`;
+import { throwError, throwMessage } from "../helpers/toastr/ToastMessages";
+import GroupAddIcon from "@mui/icons-material/GroupAdd";
+import AddIcon from "@mui/icons-material/Add";
 
 const TeamsPage: React.FC = () => {
   const [teams, setTeams] = useState<TeamProps[]>();
-
   const { currentTeamsProjects, setTeamsAndProjects } = useTeamsAndProjects();
+
+  const infoMessage = `
+  Teams can contain 4, 5 or 6 developers.
+  Multiple teams can be submitted at the same time, 
+  as each submit clears previous data.`;
 
   const handleSubmitTeams = async () => {
     try {
@@ -125,8 +126,10 @@ const TeamsPage: React.FC = () => {
                 variant="outlined"
                 color="primary"
               >
+                <AddIcon sx={{ paddingLeft: 1, paddingRight: 1 }} />
                 Add Team
               </Button>
+
               <Button
                 disabled={!teams}
                 fullWidth
@@ -134,6 +137,7 @@ const TeamsPage: React.FC = () => {
                 color="secondary"
                 onClick={handleSubmitTeams}
               >
+                <GroupAddIcon sx={{ paddingLeft: 1, paddingRight: 1 }} />
                 Submit List of Teams
               </Button>
             </Box>

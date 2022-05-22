@@ -1,12 +1,12 @@
-import { Box } from "@mui/material";
 import React, { useEffect } from "react";
 import { Routes, Route, useNavigate } from "react-router-dom";
-import HeaderAppBar from "./components/AppBar";
 import { useTeamsAndProjects } from "./helpers/customHooks/teamsAndProjectsHook";
+import HeaderAppBar from "./components/AppBar";
 import AssignedPage from "./pages/Assigned";
 import CompletedPage from "./pages/Completed";
 import ProjectsPage from "./pages/Project";
 import TeamsPage from "./pages/Teams";
+import { Box } from "@mui/material";
 
 const App: React.FC = () => {
   const { TeamsAndProjectsProvider } = useTeamsAndProjects();

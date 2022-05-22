@@ -1,23 +1,23 @@
-import { Box, Button } from "@mui/material";
 import axios from "axios";
 import { Formik, Form } from "formik";
 import { InputField } from "../components/InputField";
-import * as yup from "yup";
-import { throwMessage } from "../helpers/toastr/ToastMessages";
 import { InfoBubble } from "../components/InfoBox";
+import { Box, Button } from "@mui/material";
+import * as yup from "yup";
 import {
   ProjectProps,
   useTeamsAndProjects,
 } from "../helpers/customHooks/teamsAndProjectsHook";
-
-const infoMessage = `
-Add a single project. Project must require at least 1,
-and a maximum of 6 developers. Project will be
-assigned to the first Team available. 
-`;
+import { throwError, throwMessage } from "../helpers/toastr/ToastMessages";
+import AddCardIcon from "@mui/icons-material/AddCard";
 
 const ProjectsPage: React.FC = () => {
   const { currentTeamsProjects, setTeamsAndProjects } = useTeamsAndProjects();
+
+  const infoMessage = `
+  Add a single project. Project must require at least 1,
+  and a maximum of 6 developers. Project will be
+  assigned to the first Team available.`;
 
   const handleAddProject = async (newProject: ProjectProps) => {
     try {
@@ -33,16 +33,16 @@ const ProjectsPage: React.FC = () => {
           data: newProject,
         });
 
-          setTeamsAndProjects({
-            ...currentTeamsProjects,
-            projects: [...currentTeamsProjects.projects, newProject],
-          });
-        
+        setTeamsAndProjects({
+          ...currentTeamsProjects,
+          projects: [...currentTeamsProjects.projects, newProject],
+        });
+
         throwMessage("New Project Added Succesfully");
       }
     } catch (error) {
       console.error(error);
-      throwMessage(`ERROR, Bad Request`);
+      throwError(`ERROR, Bad Request`);
     }
   };
 
@@ -110,6 +110,7 @@ const ProjectsPage: React.FC = () => {
                 variant="outlined"
                 color="primary"
               >
+                <AddCardIcon sx={{ paddingLeft: 1, paddingRight: 1 }} />
                 Add New Project
               </Button>
             </Box>

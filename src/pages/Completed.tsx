@@ -1,16 +1,12 @@
-import { Box, Button } from "@mui/material";
 import axios from "axios";
+import { useState } from "react";
 import { Formik, Form } from "formik";
 import { InputField } from "../components/InputField";
-import * as yup from "yup";
-import { throwError, throwMessage } from "../helpers/toastr/ToastMessages";
 import { InfoBubble } from "../components/InfoBox";
-import { useState } from "react";
-
-const infoMessage = `
-Complete a project with the provided ID,
-Whether it has been started or not.
-`;
+import { Box, Button } from "@mui/material";
+import { throwError, throwMessage } from "../helpers/toastr/ToastMessages";
+import DoneIcon from "@mui/icons-material/Done";
+import * as yup from "yup";
 
 interface Completed {
   isComplete: boolean;
@@ -25,6 +21,10 @@ const notCompleted: Completed = {
 const CompletedPage: React.FC = () => {
   const [completed, setCompleted] = useState<Completed>(notCompleted);
 
+  const infoMessage = `
+  Complete a project with the provided ID,
+  Whether it has been started or not.`;
+
   const handleProjectComplete = async (projectID: number) => {
     try {
       const { status } = await axios.get("http://localhost:3000/status");
@@ -36,9 +36,9 @@ const CompletedPage: React.FC = () => {
           data: `ID=${projectID}`,
         });
         if (!res) {
-            throwError(`ERROR, Project NOT FOUND`);
-            setCompleted(notCompleted);
-          }
+          throwError(`ERROR, Project NOT FOUND`);
+          setCompleted(notCompleted);
+        }
         switch (res.status) {
           case 404:
             throwError(`ERROR, Project NOT FOUND`);
@@ -47,8 +47,8 @@ const CompletedPage: React.FC = () => {
           case 200:
             throwMessage(`Project ${res.data} is completed.`);
             setCompleted({
-                isComplete: true,
-                completedProjectID: res.data
+              isComplete: true,
+              completedProjectID: res.data,
             });
             break;
 
@@ -95,7 +95,6 @@ const CompletedPage: React.FC = () => {
           setSubmitting(true);
 
           const projectID: number = parseInt(submitData.ID);
-
           await handleProjectComplete(projectID);
 
           setSubmitting(false);
@@ -115,6 +114,7 @@ const CompletedPage: React.FC = () => {
                 variant="outlined"
                 color="primary"
               >
+                <DoneIcon sx={{ paddingLeft: 1, paddingRight: 1 }} />
                 Complete Project
               </Button>
             </Box>
@@ -125,7 +125,7 @@ const CompletedPage: React.FC = () => {
         <Box sx={{ display: "flex", justifyContent: "center" }}>
           <Box component="h1">
             <Box component="pre">
-             {`Project ${completed.completedProjectID} is completed.`}
+              {`Project ${completed.completedProjectID} is completed.`}
             </Box>
           </Box>
         </Box>

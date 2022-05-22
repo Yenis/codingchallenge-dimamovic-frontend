@@ -15,7 +15,7 @@ export interface TeamsAndProjects {
   projects: Array<ProjectProps>;
 }
 
-export const defaultState: TeamsAndProjects = {
+const defaultState: TeamsAndProjects = {
   teams: [],
   projects: [],
 };
